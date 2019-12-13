@@ -1,0 +1,239 @@
+* {    
+    margin: 0;
+    padding: 0;    
+}
+
+body {
+    background: rgb(191, 218, 213) !important;
+    overflow-x: hidden;        
+}
+
+#title h1 {
+    font-size: 20px !important;
+}
+
+#title {
+    width: 100%; 
+    background: #28a745;
+    border-radius: 5px;        
+    color: rgb(230, 245, 230);   
+    margin: 6px 0; 
+    padding: 5px;    
+    border: 1px solid rgb(72, 109, 72); 
+    /*Animation*/    
+    animation-name: title;
+    animation-duration: 6s;
+    animation-iteration-count: infinite;   
+}
+
+@keyframes title {    
+    0% {
+        background: #28a745;
+    }
+    
+    50% {
+        background: #45ce65;
+    }
+    
+    100% {
+        background: #28a745;
+    }
+}
+
+#online-header {
+    text-align: center;
+    background: #82c1b5;
+    color: rgb(60, 75, 73);
+    border-radius: 5px;
+    border: 1px solid rgb(72, 109, 72);
+    padding: 5px;    
+    float: right;
+    display: table;
+    clear: right;
+    min-width: 50%;
+    max-width: 50%;
+    height: 6vh;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#online-header:hover {    
+    background: rgb(16, 134, 119);
+    color: white;
+}
+
+#arrow {
+    font-size: 12px;
+}
+
+#users-online {
+    margin-top: 0.5vh;
+    max-height: 53.5vh;    
+    overflow-y: auto;
+    float: right;    
+    clear: right;
+    min-width: 50%;
+    max-width: 50%;    
+    box-sizing: border-box;
+    display: none;
+}
+
+.online-user {
+    line-height: 1.5rem;
+    margin-top: 5px;
+    border-radius: 5px;
+    padding: 5px;
+    background-image: linear-gradient(to bottom left, #62d87e, #28a745) ;
+    color: black;
+    border: 1px solid rgb(72, 109, 72);
+    overflow-wrap: break-word;    
+}
+
+#chat {    
+    border-radius: 5px;    
+    margin-bottom: 5px;    
+    background-image: linear-gradient(to bottom right, rgb(240, 229, 229), rgb(210, 210, 214));            
+    padding: 5px;    
+    border: 1px solid rgb(72, 109, 72);
+    height: 60vh;
+    overflow-y: auto;
+}
+
+.msg-header {
+    /*color: rgb(85, 78, 78);*/
+    color: black;
+}
+
+.message {    
+    margin: 5px;
+    background: rgb(227, 233, 140);    
+    border-radius: 5px;    
+    padding: 5px;
+    border: 1px solid rgb(151, 153, 39);
+    color: black;
+    display: table;    
+    max-width: 80%; 
+    clear: right;       
+}  
+
+.current-user {
+    float: right; 
+    margin-top: 0px;    
+}
+
+.dropup {    
+    height: 40px;
+    /*width: 200px; */
+    float: right;
+}
+
+.dropup img {
+    width: 35px;
+    float: right;
+    border-radius: 50%;  
+    cursor: pointer; 
+}
+
+.emoji {
+    float: left;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.emoji:hover {
+    background: rgb(177, 175, 175);
+    border-radius: 5px;
+}
+
+#emojisDropup {
+    background: rgb(237, 238, 240) !important;
+    box-shadow: 1px 1px 5px 2px grey;
+    padding: 6px;
+    min-width: 320px;  
+    max-width: 564px;
+}
+
+form textarea, form input {
+    background: rgb(237, 238, 240) !important;
+}
+
+/* Media Queries */
+/*
+@media only screen and (max-width: 576px) {    
+    #emojisDropup {        
+        max-width: 240px !important;
+        top: -140px !important;
+        left: 9% !important;
+    }
+}*/
+
+@media only screen and (max-width: 768px) {
+    body {
+        padding: 0 10px 10px 10px !important; 
+        /*overflow-y: hidden !important;*/
+    }
+
+    #title {
+        min-height: 35px;
+        margin: 5px 0px !important;
+        padding: 1px !important;
+    }
+
+    #online-header {  
+        float: none;      
+        min-width: 100% !important;
+        max-width: 100% !important;
+        padding: 5px !important;
+        min-height: 35px;
+    }
+    
+    #users-online {        
+        float: none;
+        min-width: 100% !important;
+        max-width: 100% !important;
+    }    
+
+    .online-user {           
+        text-align: center;    
+        padding: 2px;
+        margin-top: 4px;    
+    }
+
+    #chat {
+        height: 45vh;
+        margin-top: 8px;
+    }
+
+    .message {
+        max-width: 88%;
+    }    
+
+    #third-column {
+        display: none;
+    }
+
+    #message {
+        max-height: 10vh;
+    }      
+}
+
+@media only screen and (max-width: 992px) {
+    #online-header {        
+        min-width: 80%;
+        max-width: 80%;
+    }
+
+    #users-online {        
+        min-width: 80%;
+        max-width: 80%;
+    }
+}
+
+/* 1366 x 768 or Bigger */
+@media (min-height: 850px) {
+    #title {
+        padding: 15px;        
+        margin: 25px 0px !important;
+    }       
+}
