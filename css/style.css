@@ -115,7 +115,41 @@ body {
     display: table;    
     max-width: 80%; 
     clear: right;       
-}  
+}
+
+.meme {    
+    width: 150px;
+    height: 150px;
+    border-radius: 5px;    
+}
+
+.memeModal {    
+    width: 150px;
+    height: 150px;
+    border-radius: 5px;
+    border: 1px solid black;   
+    cursor: pointer; 
+    transition-duration: 0.3s;
+}
+
+.memeModal:hover {    
+    transform: scale(1.2);
+}
+
+.selectedMemeModal {    
+    animation-name: selected-meme;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes selected-meme {
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 
 .current-user {
     float: right; 
@@ -128,7 +162,12 @@ body {
     float: right;
 }
 
+#memezButton {
+    float: right;
+}
+
 .dropup img {
+    margin-left: 20px;
     width: 35px;
     float: right;
     border-radius: 50%;  
@@ -207,7 +246,17 @@ form textarea, form input {
 
     .message {
         max-width: 88%;
-    }    
+    }
+    
+    .meme {
+        width: 50px;
+        height: 50px;   
+    }
+
+    .memeModal {
+        width: 100px;
+        height: 100px;
+    }
 
     #third-column {
         display: none;
@@ -230,7 +279,13 @@ form textarea, form input {
     }
 }
 
-/* 1366 x 768 or Bigger */
+@media (max-width: 1366px) {
+    .meme {        
+        width: 80px;
+        height: 80px;
+    }
+}
+
 @media (min-height: 850px) {
     #title {
         padding: 15px;        

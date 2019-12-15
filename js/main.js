@@ -19,6 +19,49 @@ $(document).ready(function() {
     })
 
     loadEmojis();
+
+    // Load emojis in dropup
+    function loadEmojis() {  
+        let emojis = "";        
+        for (let i = 128512; i <= 128591; i++) {
+            emojis += `<div class="emoji">&#${i};</div>`;            
+        }        
+        $("#emojisDropup").html(emojis);
+    }
+
+    // Prevent Emoji dropup from closing by clicking inside if window width > 768
+    $("#emojisDropup").click(function(e){
+        if ($(window).width() > 768) {
+            e.stopPropagation();
+        }        
+    })
+
+    // Emoji on click insert in message box     
+    $(".emoji").on("click", function() {        
+        let message = $("#message").val();
+        message += $(this).html();
+        $("#message").val(message);
+        $("#message").focus();
+    })   
+    
+    // Click event on meme in meme modal
+    $(".memeModal").click(function() {
+        $(".selectedMemeModal").removeClass("selectedMemeModal");        
+        $(this).addClass("selectedMemeModal");        
+    })
+
+    // Click on meme button
+    $("#buttonMeme").click(function() {
+        // Check if the class 'selectedMemeModal' is assigned to a meme, if so procceed to submit meme
+        if ($(".selectedMemeModal")[0]) {
+            $("#message").val($(".selectedMemeModal").attr("data-meme"));
+            $("#messageForm").submit();
+            $(".selectedMemeModal").removeClass("selectedMemeModal");
+            $("#modalMemez").modal("hide");
+        } else {
+            alert("No meme selected!");
+        }        
+    })
     
     /* Pendientes */    
     // Crear Login y campo de contraseña para usuarios, encriptar con PHP    
@@ -83,26 +126,7 @@ $(document).ready(function() {
                 $("#users-online").html(string);
             }
         })
-    }   
-
-    /*// Event listener for page reloading or leaving
-    window.onbeforeunload = function(e) {
-        setUserOffline();
-        return null;
-    };    
-
-    // Set current User offline on page reload or leave
-    function setUserOffline() {
-        let id =  $("#hiddenUserID").val();        
-        $.ajax({
-            type: 'POST',
-            url: 'setUserOffline.php',
-            data: {user_id: id},
-            success: function(result) {
-                console.log(result);
-            }
-        })
-    }*/    
+    }    
 
     // Check if Must Scroll Function (if Scrollbar is placed at the bottom or 10% above)
     function mustScroll() {        
@@ -131,6 +155,8 @@ $(document).ready(function() {
     var notification = new Audio('resources/deduction.mp3');
     // Timestamp variables to compare
     var lastMessageTime = "";     
+    // RegExp pattern to check for meme, example 'meme_1.jpg'
+    var memePattern = /^meme_[0-9].jpg$/;
 
     // Load messages inside Chat element
     function loadMessages(forceScroll = false) {        
@@ -170,9 +196,14 @@ $(document).ready(function() {
                         }
                         msgs += `<div class="message">`;                                              
                     }                   
-                    msgs += `<span class="msg-header"><b>${result[i].name}</b> at ${result[i].time}</span><br>
-                    ${result[i].message}
-                    </div>`;                    
+                    msgs += `<span class="msg-header"><b>${result[i].name}</b> at ${result[i].time}</span><br>`;
+                    // Check if message is a Meme
+                    if (memePattern.test(result[i].message)) {
+                        msgs += `<img src="resources/memez/${result[i].message}" class="meme">`
+                    } else {
+                        msgs += result[i].message;
+                    }                    
+                    msgs += `</div>`;                    
                 }
                 // Messages preparing done
                 checkOnlineUsers();
@@ -184,31 +215,7 @@ $(document).ready(function() {
                 }                
             }
         })
-    }    
-
-    // Load emojis in dropup
-    function loadEmojis() {  
-        let emojis = "";        
-        for (let i = 128512; i <= 128591; i++) {
-            emojis += `<div class="emoji">&#${i};</div>`;            
-        }        
-        $("#emojisDropup").html(emojis);
     }
-
-    // Prevent Emoji dropup from closing by clicking inside if window width > 768
-    $("#emojisDropup").click(function(e){
-        if ($(window).width() > 768) {
-            e.stopPropagation();
-        }        
-    })
-
-    // Emoji on click insert in message box     
-    $(".emoji").on("click", function() {        
-        let message = $("#message").val();
-        message += $(this).html();
-        $("#message").val(message);
-        $("#message").focus();
-    })    
 
     // Message Textarea on Key Press
     $("#message").keypress(function(e) {
