@@ -11,7 +11,7 @@ if (isset($_POST['userName'])) {
     // Prepare and bind
     $statement = $conn->prepare("INSERT INTO users (name, status) VALUES (?, 'online')");
     $statement->bind_param("s", $user);    
-    
+
     if ($statement->execute()) {    
         $id_query = "SELECT LAST_INSERT_ID();";
         $result = $conn->query($id_query);

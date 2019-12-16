@@ -1,6 +1,6 @@
 <?php
 
-if (isset($_POST['user_id']) && isset($_POST['message'])) {
+if (isset($_POST['user_id']) && isset($_POST['message']) && !ctype_space($_POST['message'])) {
     session_start();
 
     require_once 'DB.php';
@@ -20,11 +20,12 @@ if (isset($_POST['user_id']) && isset($_POST['message'])) {
         } else {
             echo "Error: " . $statement->error;
         }
+        $statement->close();
     } /*else {
         echo "USER ID MISMATCH sending message!";
     }*/
     
-    $statement->close();
+    
     $conn->close();
 }
 
