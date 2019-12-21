@@ -15,22 +15,28 @@
         <div class="col-md-6">
             <div id="title" class="text-center">
                 <h1>Simplest Chat</h1>                
-            </div>  
+            </div>
         </div>        
     </div>    
     
     <div class="row" id="content">        
         
         <!-- Online users -->
-        <div class="col-md-3 dropdown">                 
+        <div class="col-md-3">                 
             <button id="online-header">
-                <b>Online Users: </b><span id="arrow">&#9660;</span>
+                <b>Online Users: </b><span class="arrow">&#9660;</span>
             </button>
             <div id="users-online">
                 <!--<div class="online-user">
                     Michael Jackson
+                </div>
+                <div class="online-user">
+                    Will Smith!
                 </div>-->
-            </div>            
+            </div>    
+            <div id="create-room">
+                Create Room with selected Users!
+            </div>        
         </div>        
         
         <!-- Chat -->
@@ -119,12 +125,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- User -->
-            <div>
-                User: <span id="user" class="badge badge-warning"></span>            
-            </div>
+            </div>            
             
             <!-- Message Form -->
             <form action="postMessage.php" method="POST" id="messageForm">            
@@ -145,15 +146,21 @@
                     <textarea class="form-control mt-2" name="message" id="message" rows="2"></textarea>
                 </div>
                 <input type="hidden" name="user_id" id="hiddenUserID" value="">
+                <input type="hidden" name="room_id" id="hiddenRoomID" value="">
                 <button type="submit" class="btn btn-block btn-outline btn-success">Send</button>            
             </form>        
         </div>
 
-        <!-- Empty for now -->
+        <!-- Rooms -->
         <div class="col-md-3" id="third-column">
-            
+            <div id="rooms-header">
+                <b>Rooms: </b><span class="arrow">&#9660;</span>
+            </div>
+            <div id="rooms">
+                <!--<div class="room" data-room="1">General</div>-->
+            </div>
         </div>
-    </div> 
+    </button> 
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

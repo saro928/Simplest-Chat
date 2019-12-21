@@ -63,13 +63,14 @@ body {
     color: white;
 }
 
-#arrow {
+.arrow {
     font-size: 12px;
 }
 
 #users-online {
     margin-top: 0.5vh;
-    max-height: 53.5vh;    
+    height: 53.5vh;    
+    max-height: 53.5vh;
     overflow-y: auto;
     float: right;    
     clear: right;
@@ -79,21 +80,124 @@ body {
     display: none;
 }
 
-.online-user {
+.online-user, #online-me {
     line-height: 1.5rem;
     margin-top: 5px;
     border-radius: 5px;
     padding: 5px;
-    background-image: linear-gradient(to bottom left, #62d87e, #28a745) ;
+    background: linear-gradient(to bottom left, #62d87e, #28a745) ;
+    color: white;
+    border: 1px solid rgb(72, 109, 72);
+    overflow-wrap: break-word;
+    cursor: pointer;
+}
+
+#online-me {
+    cursor: default;
+    background: rgb(16, 134, 119);
+}
+
+.online-user:hover {
+    background: linear-gradient(to bottom left, #62d87e, #00861f) ;
+}
+
+.selectedOnlineUser {    
+    animation-name: selected-user;
+    animation-duration: 0.7s;
+    animation-iteration-count: infinite;   
+}
+
+@keyframes selected-user {
+    50% {
+        opacity: 0.7;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#create-room {
+    margin-top: 5px;
+    float: right;
+    clear: right;    
+    max-width: 50%;
+    overflow-wrap: break-word !important;    
+    background: #007bff;
+    color: white;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    display: none;
+}
+
+#create-room:hover {
+    background: #0275d8;
+}
+
+#rooms-header {
+    text-align: center;
+    background: #bfc4da;
+    color: rgb(60, 75, 73);
+    border-radius: 5px;
+    border: 1px solid rgb(72, 109, 72);
+    padding: 5px !important;    
+    float: left;
+    display: table;
+    clear: left;
+    min-width: 50%;
+    max-width: 50%;
+    height: 6vh;
+    /*box-sizing: border-box;*/
+    cursor: pointer;
+    transition: 0.3s;   
+}
+
+#rooms-header:hover {    
+    background: #828ec1;
+    color: white;
+}
+
+#rooms {
+    margin-top: 0.5vh;
+    height: 53.5vh;    
+    max-height: 53.5vh;
+    overflow-y: auto;
+    float: left;    
+    clear: left;
+    min-width: 50%;
+    max-width: 50%;    
+    box-sizing: border-box;
+    display: none;
+}
+
+.room, #selected-room {
+    text-align: center;
+    line-height: 1.5rem;
+    margin-top: 5px;
+    border-radius: 5px;
+    padding: 5px;
+    background: linear-gradient(to bottom left, #a7dfd5, #40c4ab) ;
     color: black;
     border: 1px solid rgb(72, 109, 72);
-    overflow-wrap: break-word;    
+    overflow-wrap: break-word;
+    cursor: pointer;
+}
+
+.room:hover {
+    background: linear-gradient(to bottom left, #a7dfd5, #00af8f) ;
+}
+
+#selected-room {
+    cursor: default;
+    background: rgb(16, 134, 119);
+    color: white;
 }
 
 #chat {    
     border-radius: 5px;    
     margin-bottom: 5px;    
-    background-image: linear-gradient(to bottom right, rgb(240, 229, 229), rgb(210, 210, 214));            
+    background: linear-gradient(to bottom right, rgb(240, 229, 229), rgb(210, 210, 214));            
     padding: 5px;    
     border: 1px solid rgb(72, 109, 72);
     height: 60vh;
@@ -164,6 +268,7 @@ body {
 
 #memezButton {
     float: right;
+    padding: 4px;
 }
 
 .dropup img {
@@ -198,32 +303,22 @@ form textarea, form input {
 }
 
 /* Media Queries */
-/*
-@media only screen and (max-width: 576px) {    
-    #emojisDropup {        
-        max-width: 240px !important;
-        top: -140px !important;
-        left: 9% !important;
-    }
-}*/
-
-@media only screen and (max-width: 768px) {
+@media (max-width: 768px) {
     body {
         padding: 0 10px 10px 10px !important; 
-        /*overflow-y: hidden !important;*/
+        overflow-x: hidden !important;
     }
 
     #title {
         min-height: 35px;
         margin: 5px 0px !important;
-        padding: 1px !important;
+        padding: 6px 1px 1px 1px !important;
     }
 
     #online-header {  
         float: none;      
         min-width: 100% !important;
-        max-width: 100% !important;
-        padding: 5px !important;
+        max-width: 100% !important;        
         min-height: 35px;
     }
     
@@ -231,12 +326,35 @@ form textarea, form input {
         float: none;
         min-width: 100% !important;
         max-width: 100% !important;
+        height: initial !important;            
     }    
 
-    .online-user {           
+    .online-user, #online-me, .room, #selected-room {           
         text-align: center;    
         padding: 2px;
         margin-top: 4px;    
+    }    
+
+    #create-room {
+        float: none;
+        min-width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    #rooms-header {  
+        margin-top: 5px;
+        float: none;      
+        min-width: 100% !important;
+        max-width: 100% !important;
+        /*padding: 5px !important;
+        min-height: 35px;*/
+    }
+
+    #rooms {
+        float: none;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        height: initial !important;    
     }
 
     #chat {
@@ -256,27 +374,18 @@ form textarea, form input {
     .memeModal {
         width: 100px;
         height: 100px;
-    }
-
-    #third-column {
-        display: none;
-    }
+    }    
 
     #message {
         max-height: 10vh;
     }      
 }
 
-@media only screen and (max-width: 992px) {
-    #online-header {        
+@media (max-width: 992px) {
+    #online-header, #users-online, #create-room, #rooms-header, #rooms {        
         min-width: 80%;
         max-width: 80%;
-    }
-
-    #users-online {        
-        min-width: 80%;
-        max-width: 80%;
-    }
+    }    
 }
 
 @media (max-width: 1366px) {
@@ -290,5 +399,9 @@ form textarea, form input {
     #title {
         padding: 15px;        
         margin: 25px 0px !important;
-    }       
+    }   
+    
+    #rooms-header {
+        padding: 15px 5px !important;
+    }
 }

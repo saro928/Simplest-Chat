@@ -8,14 +8,20 @@ $(document).ready(function() {
         $("#userNameInput").focus();
     }
 
-    // Start with visible users for big devices
+    // Start with visible Users and Rooms for big devices
     if ($(window).width() > 768) {
         $("#users-online").show();
+        $("#rooms").show();
     }
 
-    // Toggle users online Div on click inside online users header
+    // Toggle users online Visibility on click inside online users header
     $("#online-header").click(function() {
         $("#users-online").toggle();
+    })
+
+    // Toggle Rooms Visibility on click inside rooms header
+    $("#rooms-header").click(function() {
+        $("#rooms").toggle();
     })
 
     loadEmojis();
@@ -62,8 +68,72 @@ $(document).ready(function() {
             alert("No meme selected!");
         }        
     })
+
+    // Click on Online User element then add or remove class Dinamically
+    $(document).on("click", ".online-user", function() {        
+        if ($(this).hasClass("selectedOnlineUser")) {
+            $(this).removeClass("selectedOnlineUser");    
+        } else {
+            $(this).addClass("selectedOnlineUser");
+        }
+        // Show create-room button if at least one element has the selectedOnlineUser class
+        if ($(".selectedOnlineUser")[0]) {
+            $("#create-room").show();
+        } else {
+            $("#create-room").hide();
+        }      
+    })
+
+    // Click on create-room button
+    $("#create-room").click(function() {
+        let user = $("#hiddenUserID").val();
+        let room = $("#hiddenRoomID").val();
+        let users = [];
+        $(".selectedOnlineUser").each(function() {
+            users.push($(this).attr("data-id"));
+        });
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            url: 'php/createRoom.php',
+            data: {users: users, user_id: user, room_id: room},
+            success: function(result) {
+                console.log("Created Room!");
+                $(".selectedOnlineUser").removeClass("selectedOnlineUser");
+                $("#create-room").hide();
+                checkRooms();                
+                changeRoom(result.room);
+            }
+        })
+    })
+
+    // Click on Room element
+    $(document).on("click", ".room", function() {
+        changeRoom($(this).attr("data-room"));
+    })
+
+    // Change Room, by clicking on a Room or by creating a new Room
+    function changeRoom(room) {
+        let user = $("#hiddenUserID").val();
+        let current_room = $("#hiddenRoomID").val();
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            url: 'php/changeRoom.php',
+            data: {user_id: user, current_room: current_room, target_room: room},
+            success: function(result) {
+                console.log("Changed Room!");
+                console.log(result);
+                // Set new room value in page
+                $("#hiddenRoomID").val(result.room);
+                // Load messages, online users, and Rooms I belong to
+                loadMessages(forceScroll = true);
+            }
+        })
+    }
     
     /* Pendientes */    
+    // Revisar que suena la alerta sola al cambiar de sala    
     // Crear Login y campo de contraseña para usuarios, encriptar con PHP    
     // Permitir la visualizacion de mensajes anteriores     
 
@@ -94,9 +164,9 @@ $(document).ready(function() {
             },
             success: function(result) {
                 console.log(result);                
-                $("#createUserModal").modal("hide");
-                $("#user").html(result.user);
+                $("#createUserModal").modal("hide");                
                 $("#hiddenUserID").val(result.id);
+                $("#hiddenRoomID").val(result.room);
                 loadMessages(forceScroll = true);                
                 setInterval(loadMessages, 5000);
                 // Focus on message textarea for big devices
@@ -113,20 +183,87 @@ $(document).ready(function() {
             dataType: 'json',
             type: 'POST',
             url: 'php/getOnlineUsers.php',
-            data: {user_id: $("#hiddenUserID").val()},
+            data: {user_id: $("#hiddenUserID").val(), room_id: $("#hiddenRoomID").val()},
             success: function(result) {
-                console.log(result);
-                // Check for online users
-                let string = "";
-                for (let i = 0; i < result.length; i++) {                    
-                    string += `<div class="online-user">
-                        ${result[i].name}
-                    </div>`;
-                }
-                $("#users-online").html(string);
+                console.log(result);               
+                // Children Array of users-online DIV
+                let childrenArray = $("#users-online").children();
+                // If users-online DIV has no children then insert ALL fetched online users, on page load
+                if (childrenArray.length == 0) {
+                    for (let i = 0; i < result.users.length; i++) {
+                        // Check if user is current user, if so apply css
+                        if (result.users[i].id == $("#hiddenUserID").val()) {
+                            $("#users-online").append(
+                                `<div id="online-me" data-id="${result.users[i].id}">
+                                ${result.users[i].name}
+                                </div>`
+                            );
+                        } else {
+                            $("#users-online").append(
+                                `<div class="online-user" data-id="${result.users[i].id}">
+                                ${result.users[i].name}
+                                </div>`
+                            );
+                        }                      
+                    }
+                } else {
+                    // Get array of id's of online users to compare
+                    fetchedIds = Object.values(result.ids);
+                    // Create Array of children ids in page
+                    let childrenIds = [];                 
+                    // Check if every div in page is present in result(online-users) array and Delete if it is not
+                    for (let i = 0; i < childrenArray.length; i++) {
+                        let id = parseInt($(childrenArray[i]).attr("data-id"));
+                        childrenIds.push(id);
+                        if (!fetchedIds.includes(id)) {
+                            $(childrenArray[i]).remove();                            
+                        }                        
+                    }
+                    // Check every online user id in result array and Add user to the page when necesary
+                    for (let i = 0; i < fetchedIds.length; i++) {
+                        if (!childrenIds.includes(fetchedIds[i])) {                            
+                            $("#users-online").append(
+                                `<div class="online-user" data-id="${result.users[i].id}">
+                                ${result.users[i].name}
+                                </div>`
+                            );                                                       
+                        }                        
+                    }
+                }                
             }
         })
-    }    
+    }
+
+    //Check for rooms where the current user belongs
+    function checkRooms() {
+        $.ajax({
+            dataType: 'json',
+            type: 'POST',
+            url: 'php/getRooms.php',
+            data: {user_id: $("#hiddenUserID").val()},
+            success: function(result) {
+                console.log("Got rooms!");
+                console.log(result);
+                let string = "";
+                for (let i = 0; i < result.length; i++) {
+                    // Check for current Room in chat
+                    if (result[i].room_id == $("#hiddenRoomID").val()) {
+                        string += `<div id="selected-room" data-room="${result[i].room_id}">`;
+                    } else {
+                        string += `<div class="room" data-room="${result[i].room_id}">`;
+                    }                    
+                    // Room id 1 is General chat room
+                    if (result[i].room_id == 1) {
+                        string += "General Room";
+                    } else {
+                        string += `Room ${result[i].room_id}`;
+                    }                        
+                    string += `</div>`;
+                }
+                $("#rooms").html(string);
+            }
+        })
+    }
 
     // Check if Must Scroll Function (if Scrollbar is placed at the bottom or 10% above)
     function mustScroll() {        
@@ -165,7 +302,7 @@ $(document).ready(function() {
             dataType: 'json',
             type: 'POST',
             url: 'php/getMessages.php',
-            data: {user_id: $("#hiddenUserID").val()}, 
+            data: {user_id: $("#hiddenUserID").val(), room_id: $("#hiddenRoomID").val()}, 
             error: function(xhr, status, error) {
                 console.log("No Messages found!");
                 console.log(xhr);
@@ -175,44 +312,53 @@ $(document).ready(function() {
             success: function(result) { 
                 console.log("Success!");             
                 console.log(result);
-		        result = result.reverse();
-                let msgs = '';
-                for (let i = 0; i < result.length; i++) {                    
-                    // Check for current user id in message, if so, align element to the right
-                    if (result[i].user_id == $("#hiddenUserID").val()) {
-                        msgs += `<div class="message current-user">`;                        
-                    } else {
-                        // This will store the Timestamp of last message in first messages load
-                        if (loadMessagesCounter == 1) {
-                            lastMessageTime = result[i].created_at;
-                        }
-                        // Check if this is the last message and it's not the first messages load
-                        if (i == result.length - 1 && loadMessagesCounter > 1) {                            
-                            // Play sound if Timestamp of current last message is different than the last saved Timestamp in JS
-                            if (lastMessageTime != result[i].created_at) {                                
-                                notification.play();
+                // Check if there is at least 1 message and it is formatted the way we expect
+                if (result[0].message && result[0].time && result[0].created_at && result[0].name) {
+                    result.reverse();
+                    let msgs = '';
+                    for (let i = 0; i < result.length; i++) {                    
+                        // Check for current user id in message, if so, align element to the right
+                        if (result[i].user_id == $("#hiddenUserID").val()) {
+                            msgs += `<div class="message current-user">`;                        
+                        } else {
+                            // This will store the Timestamp of last message in first messages load
+                            if (loadMessagesCounter == 1) {
+                                lastMessageTime = result[i].created_at;
                             }
-                            lastMessageTime = result[i].created_at;
-                        }
-                        msgs += `<div class="message">`;                                              
-                    }                   
-                    msgs += `<span class="msg-header"><b>${result[i].name}</b> at ${result[i].time}</span><br>`;
-                    // Check if message is a Meme
-                    if (memePattern.test(result[i].message)) {
-                        msgs += `<img src="resources/memez/${result[i].message}" class="meme">`
-                    } else {
-                        msgs += result[i].message;
-                    }                    
-                    msgs += `</div>`;                    
-                }
-                // Messages preparing done
-                checkOnlineUsers();
-                $("#chat").html(msgs);                 
-                let scrollObject = mustScroll(); 
-                // Scroll to bottom of Chat if Scrollbar is placed at the bottom or 10% above, or if forceScroll
-                if (scrollObject.mustScroll == true || forceScroll == true) {
-                    $("#chat").animate({ scrollTop: scrollObject.scrollDistance}, 500);                 
-                }                
+                            // Check if this is the last message and it's not the first messages load
+                            if (i == result.length - 1 && loadMessagesCounter > 1) {                            
+                                // Play sound if Timestamp of current last message is different than the last saved Timestamp in JS
+                                if (lastMessageTime != result[i].created_at) {                                
+                                    notification.play();
+                                }
+                                lastMessageTime = result[i].created_at;
+                            }
+                            msgs += `<div class="message">`;                                              
+                        }                   
+                        msgs += `<span class="msg-header"><b>${result[i].name}</b> at ${result[i].time}</span><br>`;
+                        // Check if message is a Meme
+                        if (memePattern.test(result[i].message)) {
+                            msgs += `<img src="resources/memez/${result[i].message}" class="meme">`
+                        } else {
+                            msgs += result[i].message;
+                        }                    
+                        msgs += `</div>`;                    
+                    }
+                    // Messages preparing done
+                    checkOnlineUsers();
+                    checkRooms();
+                    $("#chat").html(msgs);                 
+                    let scrollObject = mustScroll(); 
+                    // Scroll to bottom of Chat if Scrollbar is placed at the bottom or 10% above, or if forceScroll
+                    if (scrollObject.mustScroll == true || forceScroll == true) {
+                        $("#chat").animate({ scrollTop: scrollObject.scrollDistance}, 500);                 
+                    }               
+                } else {
+                    // Zero messages in room
+                    checkOnlineUsers();
+                    checkRooms();
+                    $("#chat").html(""); 
+                }	         
             }
         })
     }
@@ -236,14 +382,15 @@ $(document).ready(function() {
         let message = $("#message").val();
         // Encode the message
         let encodedMsg = $('<div />').text(message).html();
-        let id = $("#hiddenUserID").val();        
+        let id = $("#hiddenUserID").val();   
+        let room = $("#hiddenRoomID").val();     
         $.ajax({            
             type: 'POST',
             url: 'php/postMessage.php',
-            data: {user_id: id, message: encodedMsg},
+            data: {user_id: id, message: encodedMsg, room_id: room},
             success: function(result) {
                 console.log(result);     
-                loadMessages(forceScroll = true);                
+                loadMessages(forceScroll = true);
                 $("#message").val("");
             }
         })
