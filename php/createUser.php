@@ -24,7 +24,7 @@ if (isset($_POST['userName'])) {
         }
         // Create ID session variable for validation in all php files
         $_SESSION['ID'] = $data['id'];        
-        // Send back user name, user id and room id in Array
+        // Send back user id and room id in Array
         $statement->close();
         echo json_encode($data);
     } else {

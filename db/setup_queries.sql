@@ -10,10 +10,16 @@ CREATE TABLE users(
     PRIMARY KEY (id)
 ) ENGINE = InnoDB;
 
+-- The General Room where all new Users are headed is room_id = 1, so be sure to create this Room after the creation of tables and before running the Chat
+CREATE TABLE chat_rooms(
+	room_id INTEGER AUTO_INCREMENT,
+    PRIMARY KEY (room_id)
+) ENGINE = InnoDB;
+
 CREATE TABLE messages(
 	message_id INTEGER AUTO_INCREMENT,
     message TEXT,
-    user_id SMALLINT,
+    user_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     room_id INTEGER DEFAULT 1,
     PRIMARY KEY (message_id),
@@ -21,16 +27,11 @@ CREATE TABLE messages(
     FOREIGN KEY (room_id) REFERENCES chat_rooms (room_id)
 ) ENGINE = InnoDB;
 
--- The General Room where all new Users are headed is room_id = 1, so be sure to create this Room after the creation of tables and before running the Chat
-CREATE TABLE chat_rooms(
-	room_id INTEGER AUTO_INCREMENT,
-    PRIMARY KEY (room_id)
-) ENGINE = InnoDB;
-
 CREATE TABLE chat_rooms_has_users (
+    id INTEGER AUTO_INCREMENT,
     room_id INTEGER DEFAULT 1,
     user_id INTEGER,
-    PRIMARY KEY (room_id, user_id),  
+    PRIMARY KEY (id),  
     FOREIGN KEY (room_id) REFERENCES chat_rooms (room_id),
     FOREIGN KEY (user_id) REFERENCES users (id)
 ) ENGINE = InnoDB;

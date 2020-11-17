@@ -12,10 +12,11 @@ $pass = getenv("DB_PASSWORD");
 $db = getenv("DB_DATABASE");
 
 // Create connection
-$conn = new mysqli("localhost", "root", "doris", "chat", 3308);
+$conn = new mysqli($host, $user, $pass, $db);
+
 // Check connection
 if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+  die("Connection failed: " . $conn->connect_error);
 }
 
 ?>

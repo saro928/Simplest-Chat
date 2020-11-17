@@ -11,8 +11,7 @@ if (isset($_POST['user_id']) && isset($_POST['room_id'])) {
     // Verify match between incoming ID and session ID AND match between incoming room ID and session room ID
     if ($_POST['user_id'] == $_SESSION['ID'] && $room_id == $_SESSION['room']) {
         // Get online users query
-        $statement = $conn->prepare("SELECT id, name FROM users AS u JOIN chat_rooms_has_users AS c ON u.id = c.user_id 
-        WHERE status = 'online' AND room_id = ? ORDER BY name");
+        $statement = $conn->prepare("SELECT u.id, name FROM users AS u JOIN chat_rooms_has_users AS c ON u.id = c.user_id WHERE status = 'online' AND room_id = ? ORDER BY name");
         $statement->bind_param("i", $room_id);
         $statement->execute();
         $result = $statement->get_result();
@@ -29,9 +28,9 @@ if (isset($_POST['user_id']) && isset($_POST['room_id'])) {
         $data['ids'] = $ids;
         $statement->close();
         echo json_encode($data);
-    } /*else {
+    } else {
         echo json_encode("USER ID MISMATCH getting online users!");
-    }*/    
+    }    
     
     $conn->close();
 }
