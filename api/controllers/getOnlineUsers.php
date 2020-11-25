@@ -18,7 +18,7 @@ if (isset($_POST['user_id']) && isset($_POST['room_id'])) {
       echo json_encode(["Error" => $e->getMessage()]);
     }
   } else {
-    echo json_encode(["Error" => "USER ID MISMATCH getting online users!"]);
+    echo json_encode(["Error" => "USER ID MISMATCH getting online users!", "SESSION_ID" => $_SESSION['ID'], "user_id" => $_POST['user_id']]);
   }    
 } else {
   echo json_encode(["Error" => "No user_id or room_id provided..."]);
